@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Chatroom Citadel</title>
+	<title>Andrew Lee Chatroom</title>
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
 	<script src="https://unpkg.com/vue@2.5.13/dist/vue.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
@@ -31,8 +31,18 @@
 	</style>
 </head>
 <body>
-	<h1 class="title">Welcome to the Broadcast ROOM</h1>
-	<div id="app">
+  <h1 class="title">Welcome to Andrew Lee's Chatroom</h1>
+  <!-- <div style="float: right; position: sticky; padding-bottom: 10%;"> -->
+  <!-- <div style="float: right; position: absolute; padding-bottom: 30%;"> -->
+  <!-- <div style="float: right; padding-bottom: 30%;"> -->
+  <div style="float: right;">
+	<h3="title" style="float: right; border-bottom: 700px;">Professor Shahid Noor | St. Olaf College</h3><br/>
+	<h3="title" style="float: right">CS 300: Cloud Computing</h3><br/>
+	<h3="title" style="float: right; padding-bottom: 10%;">Spring 2018</h3><br/>
+  </div>
+  <br/>
+
+	<div id="app" style="padding-top: 10%;">
 		
 		<section class="hero is-primary is-medium" v-if="broadcast">
 		  <div class="hero-body">
@@ -71,21 +81,27 @@
 				</p>
 				<br>
 				<p class="control">
-					<input class="input" type="text" name="color" placeholder="Color: is-primary, is-danger, is-warning, ... (Bulma color)" v-model="color">
+					<input class="input" type="text" name="color" placeholder="Color: is-primary, is-danger, is-warning, ... (Bulma color)" v-model="color" style="display: none;">
 				</p>
 				<br>
 					<p><a class="button is-primary" @click="join">Join</a></p>
 			</div>
 			
 		</div>
-	</div>
+    </div><br /><br /><br />
+    <h3 style="float: right;">Special thanks to <a href="https://github.com/haihoang202">Hoang Pham</a> for <a href="https://github.com/haihoang202/GO-Chatroom">his very effective implementation of a Vue.js based chatroom</a> using the <a href="http://www.gorillatoolkit.org/pkg/websocket">gorilla websockets</a> library for <a href="https://golang.org/">Golang</a>.</h3><br/> 
+    <h3 style="float:right;">The UI portion of the chatroom heavily borrows from this work. There is also a advanced Chatbot interface which I wrote. This Chatbot can answer predefined questions such as "What time is it?"</h3><br />
+      <h3 style=float:right;">Persistent storage of all query:answer associations is provided by <a href="https://redis.io/">Redis</a>.</h3><br/><br/>
+    <br />-----------------------------------------------<br />
+    <h3 style="float: left;">More information at the <a href="https://github.com/gilgameshskytrooper/chatbot">project Github page.</a></h3>
+
 	<script>
 		new Vue ({
 			el: '#app',
 
 			data: {
 				ws: null,
-				msg: 'a message',
+				msg: '',
 				chatcontainer: '',
 				joined: false,
 				username: '',
@@ -144,6 +160,14 @@
 
 				send(){
 					if (this.receiverID == '') {
+						console.log(JSON.stringify({
+							type: 				"broadcast",
+							senderID: 			this.username,
+							receiverID: 		"",
+							data: 				this.msg,
+							color: 				this.color
+						}));
+
 						this.ws.send(JSON.stringify({
 							type: 				"broadcast",
 							senderID: 			this.username,
