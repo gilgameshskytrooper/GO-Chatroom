@@ -1,0 +1,41 @@
+version: '2'
+services:
+  db:
+    image: 'bitnami/redis:latest'
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379'
+    volumes:
+      - ./redis:/bitnami
+  firstinstance:
+    build: .
+    restart: always
+    links:
+      - db
+    environment:
+      - REDISLOCATION=redis://db:6379
+      - TMPDIR=/tmp
+    ports:
+      - '1012:8080'
+  secondinstance:
+    build: .
+    restart: always
+    links:
+      - db
+    environment:
+      - REDISLOCATION=redis://db:6379
+      - TMPDIR=/tmp
+    ports:
+      - '1013:8080'
+  thirdinstance:
+    build: .
+    restart: always
+    links:
+      - db
+    environment:
+      - REDISLOCATION=redis://db:6379
+      - TMPDIR=/tmp
+    ports:
+      - '1014:8080'

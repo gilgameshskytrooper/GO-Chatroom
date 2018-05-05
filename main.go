@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"sync"
 
 	"github.com/gomodule/redigo/redis"
@@ -29,7 +30,8 @@ var (
 	gStore      *Store
 	gPubSubConn *redis.PubSubConn
 	gRedisConn  = func() (redis.Conn, error) {
-		return redis.Dial("tcp", ":6379")
+		// return redis.Dial("tcp", ":6379")
+		return redis.DialURL(os.Getenv("REDISLOCATION"))
 	}
 	redisconn redis.Conn
 )
@@ -38,8 +40,8 @@ func init() {
 	gStore = &Store{
 		Users: make([]*User, 0, 1),
 	}
-	redisconn, _ = redis.Dial("tcp", ":6379")
-	// redisconn, _ := redis.DialURL(os.Getenv("REDISLOCATION"))
+	// redisconn, _ = redis.Dial("tcp", ":6379")
+	redisconn, _ = redis.DialURL(os.Getenv("REDISLOCATION"))
 }
 
 func (s *Store) newUser(username string, conn *websocket.Conn) *User {
