@@ -107,90 +107,49 @@
 				username: '',
 				broadcast: true,
 				receiverID: '',
-				chatcontainer: '',
 				private: false,
 				privatechatcontainer: '',
 				color: '',
 			},
 
-			created() {
-				var self = this
-
-				this.ws = new WebSocket('ws://'+window.location.host+'/mess/ws')
-
-				this.ws.addEventListener("message",function(e){
-					var msg = JSON.parse(e.data)
-					// self.$emit('newMess',msg)
-					console.log(msg)
-					if (msg.type == "broadcast") {
-						var float = ""
-						if (msg.senderID == self.username) {
-							float = "class='self'"
-						} else {
-							float = "class='other'"
-						}
-						self.chatcontainer += '<li '+float+'><div><p>'+msg.senderID+'</p><a class="button '+msg.color+' is-rounded">'+msg.data+'</a></div></li>'
-					}
-					if (msg.type == "private") {
-						var float = ""
-						if (msg.senderID == self.username) {
-							float = "class='self'"
-						} else {
-							float = "class='other'"
-						}
-						self.private = true
-						self.privatechatcontainer += '<li '+float+'><div><p>'+msg.senderID+'</p><a class="button '+msg.color+' is-rounded">'+msg.data+'</a></div></li>'
-					}
-					
-				})
-			},
-
 			methods: {
 				join(){
-					this.ws.send(JSON.stringify({
-						type: 				"join",
-						senderID: 			this.username,
-						receiverID: 		"",
-						data: 				"Join",
-						color: 				this.color
-					}))
+          this.ws = new WebSocket('ws://'+window.location.host+'/ws/' + this.username)
+          this.chatcontainer = '';
+          console.log(this.chatcontainer);
+
+          var vue = this; 
+          this.ws.addEventListener("message",function(e){
+            var msg = JSON.parse(e.data)
+            console.log(msg)
+              if (msg.senderid == vue.username) {
+                vue.chatcontainer += '<li class="self"><div><p>'+msg.senderid+'</p><a class="button is-rounded">'+msg.content+'</a></div></li>'
+              } else {
+                vue.chatcontainer += '<li class="other"><div><p>'+msg.senderid+'</p><a class="button is-rounded">'+msg.content+'</a></div></li>'
+              }
+          })
 					
 					this.joined = true
 				},
 
 				send(){
-					if (this.receiverID == '') {
 						console.log(JSON.stringify({
-							type: 				"broadcast",
-							senderID: 			this.username,
-							receiverID: 		"",
-							data: 				this.msg,
-							color: 				this.color
+							senderid: 			this.username,
+							toid: 		this.receiverID,
+							content: 				this.msg,
 						}));
 
 						this.ws.send(JSON.stringify({
-							type: 				"broadcast",
-							senderID: 			this.username,
-							receiverID: 		"",
-							data: 				this.msg,
-							color: 				this.color
+							senderid: 			this.username,
+							toid: 		this.receiverID,
+							content: 				this.msg,
 						}))	
-					} else {
-						this.ws.send(JSON.stringify({
-							type: 				"private",
-							senderID: 			this.username,
-							receiverID: 		this.receiverID,
-							data: 				this.msg,
-							color: 				this.color
-						}))
-					}
 					
 					this.msg = ''
 				},
 
 				privConverse(){
 					this.public = false
-
 				}
 			}
 		});
